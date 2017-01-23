@@ -160,39 +160,42 @@ int main(int argc, const char **args)
         return 1;
     }    
 
-    if (argc < 1) 
+    /*if (argc <= 1) 
     {
         printf("No pid has been given in arguments\n");
         return 1;
-    }    
+    }*/
 
-    int pid = atoi(args[1]);
-    printf("Enumerating CLRs in process %d\n", pid);
+    int pid = getpid();//atoi(args[1]);
+    //printf("Enumerating CLRs in process %d\n", pid);
 
     HANDLE *handleArray;
     LPWSTR *stringArray;
     DWORD arrayLength;
-    HRESULT hr = enumerateCLRs(pid, &handleArray, &stringArray, &arrayLength);
+    HRESULT hr;
+    /*HRESULT hr = enumerateCLRs(pid, &handleArray, &stringArray, &arrayLength);
     if (hr != 0 || arrayLength <= 0)
     {
         printf("EnumerateCLRs FAILED hr=%X arrayLength=%d\n", (int)hr, arrayLength);
         return 1;
-    }
+    }*/
 
     WCHAR verStr[1000];
     DWORD verLen;
-    hr = createVersionStringFromModule(pid, stringArray[0], verStr, sizeof(verStr)/sizeof(verStr[0]), &verLen);
+    /*hr = createVersionStringFromModule(pid, stringArray[0], verStr, sizeof(verStr)/sizeof(verStr[0]), &verLen);
     if (hr != 0)
     {
         printf("CreateVersionStringFromModule FAILED hr=%X\n", (int)hr);
         return 1;
-    }
+    }*/
 
-    ICorDebug *pCordb = nullptr;
-    hr = createDebuggingInterfaceFromVersion(verStr, (IUnknown **)&pCordb);
+    ICorDebug *pCordb = new ICorDebug(CorDebugLatestVersion);
+    //const char16_t  mystr[100];
+    const char16_t mystr[1024] = u"v2.0.0";
+    hr = createDebuggingInterfaceFromVersion(mystr, (IUnknown **)&pCordb);
     printf("CreateVersionStringFromModule hr=%X pCordb=%p\n", (int)hr, pCordb);
 
-    closeCLREnumeration(handleArray, stringArray, arrayLength);
+    //closeCLREnumeration(handleArray, stringArray, arrayLength);
 
     if (hr != 0 || pCordb == nullptr)
     {
@@ -208,9 +211,9 @@ int main(int argc, const char **args)
     printf("SetManagedHandler hr=%X\n", (int)hr);    
 
     ICorDebugProcess *process = nullptr;
-    printf("Attaching to pid %d\n", pid);
-    hr = pCordb->DebugActiveProcess((DWORD)pid, FALSE, &process);
-    printf("DebugActiveProcess hr=%X\n", (int)hr);
+    //printf("Attaching to pid %d\n", pid);
+    //hr = pCordb->DebugActiveProcess((DWORD)pid, FALSE, &process);
+    //printf("DebugActiveProcess hr=%X\n", (int)hr);
 
     printf("<press any key>");
     getchar();
