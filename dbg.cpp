@@ -190,6 +190,7 @@ int main(int argc, const char **args)
 
     ICorDebug *pCordb = nullptr;
     hr = createDebuggingInterfaceFromVersion(verStr, (IUnknown **)&pCordb);
+    printf("verStr: %s\n", verStr);
     printf("CreateVersionStringFromModule hr=%X pCordb=%p\n", (int)hr, pCordb);
 
     closeCLREnumeration(handleArray, stringArray, arrayLength);
@@ -212,8 +213,11 @@ int main(int argc, const char **args)
     hr = pCordb->DebugActiveProcess((DWORD)pid, FALSE, &process);
     printf("DebugActiveProcess hr=%X\n", (int)hr);
 
-    printf("<press any key>");
-    getchar();
+    //hr = process->Stop(0);
+    //printf("Stop hr=%X\n", (int)hr);
+    
+    //printf("<press any key>");
+    //getchar();
 
     hr = process->Stop(0);
     printf("Stop hr=%X\n", (int)hr);
@@ -225,7 +229,7 @@ int main(int argc, const char **args)
     ICorDebugAppDomain *domains[2];
     ULONG nDomains = 0;
     hr = domainEnum->Next(2, domains, &nDomains);
-    printf("Next hr=%X\n", (int)hr);
+    printf("Next hr=%X\n nDomains:%d\n", (int)hr,nDomains);
 
     for (int i = 0; i < nDomains; i++) {
         ICorDebugBreakpointEnum *bpEnum;
@@ -248,7 +252,7 @@ int main(int argc, const char **args)
             }
         }
     }
-
+    
     hr = process->Detach();
     printf("Detach hr=%X\n", (int)hr);
 
