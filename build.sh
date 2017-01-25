@@ -2,6 +2,8 @@
 export CORECLR_SRC=$HOME/dev/coreclr/src
 mkdir bin > /dev/null 2>&1
 
+ARG1=$1
+
 OSName=$(uname -s)
 case $OSName in
     Linux)
@@ -44,3 +46,7 @@ else
     exit 1
 fi
 
+if [ $ARG1 = "preprocess" ]; then
+    clang++-3.5 -E -DPAL_IMPLEMENTATION -DFEATURE_PAL -D__LINUX__ -DPLATFORM_UNIX -DPAL_STDCPP_COMPAT -I./inc -I$CORECLR_SRC/inc -I$CORECLR_SRC/pal/inc -I$CORECLR_SRC/pal/inc/rt -pthread -std=c++11 -g dbg.cpp cordebug_i.cpp
+fi
+    
